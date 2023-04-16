@@ -1,0 +1,22 @@
+{
+  "name": "typescript-3-ma-cross-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/francoisrice/typescript-3-ma-cross-bot.git"
+  },
+  "author": "François Rice",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/francoisrice/typescript-3-ma-cross-bot/issues"
+  },
+  "homepage": "https://github.com/francoisrice/typescript-3-ma-cross-bot#readme",
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
