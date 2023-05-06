@@ -1,8 +1,14 @@
+require("dotenv").config();
 import axios from "axios";
+import { MongoClient } from "mongodb";
+
+import { sendToMongo } from "./mongo";
+import { Candle } from "./types";
 
 const interval = 30 * 60 * 1000; // 30 minutes in milliseconds
 const timestamps: number[] = [];
 const prices: number[] = [];
+var candle: Candle | null = null;
 
 // Get price data from the queue
 // const pull = () => {}
@@ -33,14 +39,36 @@ setTimeout(() => {
 	const open_price = prices[0];
 	const close_price = prices[prices.length - 1];
 
-	// const candle = {
-	// 	timeframe: Date(timestamps[0]),
-	// 	timestamp: timestamps[0],
-	// 	open: open_price,
-	// 	high: high_price,
-	// 	low: low_price,
-	// 	close: close_price,
-	// };
+	candle = {
+		timeframe: "TODO: timestamp to ISO 8601",
+		timestamp: timestamps[0],
+		open: open_price,
+		high: high_price,
+		low: low_price,
+		close: close_price,
+	};
+
+	sendToMongo(candle);
+
+	// const uri =
+	// 	"mongodb+srv://<username>:<password>@<cluster>.mongodb.net/test?retryWrites=true&w=majority";
+	// const client = new MongoClient(uri);
+
+	// try {
+	// 	await client.connect();
+
+	// 	const db = client.db("mydb");
+	// 	const collection = db.collection("prices");
+
+	// 	collection.insertOne(candle);
+	// } catch (err) {
+	// 	if (err) {
+	// 		console.error(err);
+	// 		return;
+	// 	}
+	// } finally {
+	// 	client.close();
+	// }
 
 	// Print the results
 	console.log(`High price: $${high_price.toFixed(2)}`);
