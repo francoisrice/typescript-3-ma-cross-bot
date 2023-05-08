@@ -1,12 +1,12 @@
 require("dotenv").config();
 import axios from "axios";
-import { MongoClient } from "mongodb";
+// import { MongoClient } from "mongodb";
 
-import { sendToMongo } from "./mongo";
+import { sendBTCTickToMongo } from "./mongo";
 import { Candle } from "./types";
 
 const interval = 30 * 60 * 1000; // 30 minutes in milliseconds
-const timestamps: number[] = [];
+const timestamps: Date[] = [];
 const prices: number[] = [];
 var candle: Candle | null = null;
 
@@ -20,7 +20,10 @@ const timer = setInterval(() => {
 		.get("https://api.coindesk.com/v1/bpi/currentprice.json")
 		.then((response) => {
 			const price = response.data.bpi.USD.rate_float;
-			const timestamp = Date.now();
+
+			console.log(price); // Let us know you're alive
+
+			const timestamp = new Date();
 			timestamps.push(timestamp);
 			prices.push(price);
 		})
@@ -40,7 +43,8 @@ setTimeout(() => {
 	const close_price = prices[prices.length - 1];
 
 	candle = {
-		timeframe: "TODO: timestamp to ISO 8601",
+		metadata: { period: "30m" },
+		timeframe: timestamps[0].toUTCString(),
 		timestamp: timestamps[0],
 		open: open_price,
 		high: high_price,
@@ -48,27 +52,8 @@ setTimeout(() => {
 		close: close_price,
 	};
 
-	sendToMongo(candle);
-
-	// const uri =
-	// 	"mongodb+srv://<username>:<password>@<cluster>.mongodb.net/test?retryWrites=true&w=majority";
-	// const client = new MongoClient(uri);
-
-	// try {
-	// 	await client.connect();
-
-	// 	const db = client.db("mydb");
-	// 	const collection = db.collection("prices");
-
-	// 	collection.insertOne(candle);
-	// } catch (err) {
-	// 	if (err) {
-	// 		console.error(err);
-	// 		return;
-	// 	}
-	// } finally {
-	// 	client.close();
-	// }
+	// TODO: Handle a failure scenario
+	sendBTCTickToMongo(candle);
 
 	// Print the results
 	console.log(`High price: $${high_price.toFixed(2)}`);

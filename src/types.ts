@@ -1,6 +1,7 @@
 export interface Candle {
+	metadata: { period: string };
 	timeframe: string;
-	timestamp: number;
+	timestamp: Date;
 	open: number;
 	high: number;
 	low: number;

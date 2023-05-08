@@ -11,15 +11,16 @@ if (uri === "") {
 }
 const client = new MongoClient(uri);
 
-// export const sendToMongo = async (client: MongoClient, candle: Candle) => {
-export const sendToMongo = async (candle: Candle) => {
+export const sendBTCTickToMongo = async (candle: Candle) => {
 	try {
 		await client.connect();
 
-		const db = client.db("mydb");
-		const collection = db.collection("prices");
+		const result = await client
+			.db("dev")
+			.collection("BTCprices")
+			.insertOne(candle);
 
-		collection.insertOne(candle);
+		return `New tick recorded: ${result.insertedId}`;
 	} catch (err) {
 		if (err) {
 			console.error(err);
