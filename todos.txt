@@ -1,0 +1,11 @@
+ToDo's
+----------
+
+* Dockerize & Ship the bitcoin-fetcher
+    * Send bitcoin-fetcher data to MongoDB
+* Write tests for Bitcoin-fetcher & MovingAverage Calc, 
+* Fix MongoDB Env Var read for functions
+* Use a debug flag for logging
+
+* Cache Moving Average Data (WiredTiger?, Redis?)
+
