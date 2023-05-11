@@ -1,5 +1,6 @@
 import axios from "axios";
 import CryptoJS from "crypto-js";
+import { LocalStorage } from "node-localstorage";
 
 import { getMovingAveragesWithPrice } from "./mongo";
 import { Candle } from "./types";
@@ -10,6 +11,8 @@ import { Candle } from "./types";
 setTimeout(() => {
 	// Refresh Moving Average Cache
 });
+
+const localstorage = new LocalStorage("./localstorage");
 
 var isPositionOpened = false;
 
@@ -27,15 +30,15 @@ if (sellVar.toUpperCase().includes("MAX")) {
 }
 
 const main = async () => {
-	const price = await fetchPrice();
+	const price: number = await fetchPrice();
 
 	const averages = await getMovingAveragesWithPrice(price); // Caching handled within function
 
 	if (averages) {
 		if (
+			isPositionOpened == false &&
 			averages.ma7 > averages.ma21 &&
-			averages.ma7 > averages.ma55 &&
-			isPositionOpened == false
+			averages.ma7 > averages.ma55
 		) {
 			// Open a position
 			const orderResponse = await sendBuyOrder();
@@ -45,18 +48,42 @@ const main = async () => {
 				isPositionOpened = true;
 				const assetAmount = 100.0 / price;
 
-				// localStorage.setItem(`assetAmount-BTC`, assetAmount);
-				// localStorage.setItem(`entryPrice-BTC`, price);
+				localStorage.setItem(`assetAmount-BTC`, assetAmount.toString());
+				localStorage.setItem(`entryPrice-BTC`, price.toString());
 			}
 		} else if (
-			(averages.ma7 < averages.ma21 || averages.ma7 < averages.ma55) &&
-			isPositionOpened == true
+			isPositionOpened == true &&
+			(averages.ma7 < averages.ma21 || averages.ma7 < averages.ma55)
 		) {
 			// Close a position
-			if (sellVar.toUpperCase().includes("MAX")) {
-				const base_size = assetAmount * (price / entryPrice);
+			var assetAmount: number;
+			var entryPrice: number;
+			var base_size: number;
+
+			const assetAmountString = localStorage.getItem(`assetAmount-BTC`);
+			if (!assetAmountString) {
+				// throw new Error("Asset Amount is null.");
+				assetAmount = -1;
 			} else {
-				const base_size = parseFloat(sellVar) / price;
+				assetAmount = parseFloat(assetAmountString);
+			}
+
+			const entryPriceString = localStorage.getItem(`entryPrice-BTC`);
+			if (!entryPriceString) {
+				// throw new Error("Entry Price is null.");
+				entryPrice = -1;
+			} else {
+				entryPrice = parseFloat(entryPriceString);
+			}
+
+			if (
+				sellVar.toUpperCase().includes("MAX") &&
+				assetAmount > 0 &&
+				entryPrice > 0
+			) {
+				base_size = assetAmount * (price / entryPrice);
+			} else {
+				base_size = parseFloat(sellVar) / price;
 			}
 
 			const orderResponse = await sendSellOrder(base_size);
@@ -65,8 +92,8 @@ const main = async () => {
 			if (order.data.success === true) {
 				isPositionOpened = false;
 
-				// localStorage.setItem(`assetAmount-BTC`, null);
-				// localStorage.setItem(`entryPrice-BTC`, null);
+				localStorage.setItem(`assetAmount-BTC`, "");
+				localStorage.setItem(`entryPrice-BTC`, "");
 			}
 		}
 	} else {
@@ -190,4 +217,6 @@ const sendSellOrder = async (base_size: number) => {
 	return sellResponse;
 };
 
-main();
+setInterval(async () => {
+	await main();
+}, 60000);
