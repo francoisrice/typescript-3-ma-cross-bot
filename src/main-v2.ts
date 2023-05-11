@@ -45,9 +45,11 @@ const main = async () => {
 			console.log(
 				`MA crossover detected. Buying a position @ ${price.toString()}`
 			);
+			const orderResponse = await sendMockBuyOrder();
+			const order = await orderResponse;
 
-			const orderResponse = await sendBuyOrder();
-			const order = await orderResponse.json();
+			// const orderResponse = await sendBuyOrder();
+			// const order = await orderResponse.json();
 			// if (order.status == "200" || order.status == "201") {
 			if (order.data.success === true) {
 				isPositionOpened = true;
@@ -98,9 +100,11 @@ const main = async () => {
 			} else {
 				base_size = parseFloat(sellVar) / price;
 			}
+			const orderResponse = await sendMockSellOrder(base_size);
+			const order = await orderResponse;
 
-			const orderResponse = await sendSellOrder(base_size);
-			const order = await orderResponse.json();
+			// const orderResponse = await sendSellOrder(base_size);
+			// const order = await orderResponse.json();
 			// if (orderResponse.status == "200" || orderResponse.status == "201") {
 			if (order.data.success === true) {
 				isPositionOpened = false;
@@ -151,6 +155,24 @@ const fetchPrice = async (): Promise<number> => {
 const createSignature = (inputString: string, secret: string) => {
 	const hash = CryptoJS.HmacSHA256(inputString, secret);
 	return hash.toString();
+};
+
+const sendMockBuyOrder = async () => {
+	return {
+		status: "200",
+		data: {
+			success: true,
+		},
+	};
+};
+
+const sendMockSellOrder = async (base_size: number) => {
+	return {
+		status: "200",
+		data: {
+			success: true,
+		},
+	};
 };
 
 const sendBuyOrder = async () => {
