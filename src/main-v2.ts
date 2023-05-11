@@ -16,6 +16,16 @@ var isPositionOpened = false;
 const api_key = process.env.COINBASE_API_KEY || "";
 const api_secret = process.env.COINBASE_API_SECRET || "";
 
+const buyVar = process.env.BUY_AMOUNT || "100.0";
+if (buyVar.toUpperCase().includes("MAX")) {
+	// Use max funds. Where should we get this from? Database? A call to Coinbase? Another service updating from a Webhook?
+}
+
+const sellVar = process.env.SELL_AMOUNT || "100.0";
+if (sellVar.toUpperCase().includes("MAX")) {
+	// Use max funds. Where should we get this from? Database? A call to Coinbase? Another service updating from a Webhook?
+}
+
 const main = async () => {
 	const price = await fetchPrice();
 
@@ -43,7 +53,11 @@ const main = async () => {
 			isPositionOpened == true
 		) {
 			// Close a position
-			const base_size = assetAmount * (price / entryPrice);
+			if (sellVar.toUpperCase().includes("MAX")) {
+				const base_size = assetAmount * (price / entryPrice);
+			} else {
+				const base_size = parseFloat(sellVar) / price;
+			}
 
 			const orderResponse = await sendSellOrder(base_size);
 			const order = await orderResponse.json();
