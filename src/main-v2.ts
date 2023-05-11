@@ -31,6 +31,7 @@ if (sellVar.toUpperCase().includes("MAX")) {
 
 const main = async () => {
 	const price: number = await fetchPrice();
+	console.log(price); // Let us know you're alive
 
 	const averages = await getMovingAveragesWithPrice(price); // Caching handled within function
 
@@ -41,12 +42,20 @@ const main = async () => {
 			averages.ma7 > averages.ma55
 		) {
 			// Open a position
+			console.log(
+				`MA crossover detected. Buying a position @ ${price.toString()}`
+			);
+
 			const orderResponse = await sendBuyOrder();
 			const order = await orderResponse.json();
 			// if (order.status == "200" || order.status == "201") {
 			if (order.data.success === true) {
 				isPositionOpened = true;
 				const assetAmount = 100.0 / price;
+
+				console.log(
+					`Buy Order successful. Bought ${assetAmount.toString()} BTC @ ${price.toString()}`
+				);
 
 				localStorage.setItem(`assetAmount-BTC`, assetAmount.toString());
 				localStorage.setItem(`entryPrice-BTC`, price.toString());
@@ -56,6 +65,10 @@ const main = async () => {
 			(averages.ma7 < averages.ma21 || averages.ma7 < averages.ma55)
 		) {
 			// Close a position
+			console.log(
+				`MA correction detected. Selling a position @ ${price.toString()}`
+			);
+
 			var assetAmount: number;
 			var entryPrice: number;
 			var base_size: number;
@@ -94,6 +107,30 @@ const main = async () => {
 
 				localStorage.setItem(`assetAmount-BTC`, "");
 				localStorage.setItem(`entryPrice-BTC`, "");
+
+				console.log(
+					`Sell Order successful. Sold ${base_size.toString()} BTC @ ${price.toString()}`
+				);
+				var profit: number;
+				var realProfit: number;
+
+				if (assetAmount > 0 && entryPrice > 0) {
+					profit = price / entryPrice;
+					// if (price > entryPrice) {
+					// 	profit = price / entryPrice;
+					// 	// realProfit;
+					// } else {
+					// 	profit = price / entryPrice;
+					// 	// realProfit = (base_size * price) / (assetAmount * entryPrice);
+					// }
+					if (profit >= 1.0) {
+						console.log(`Made ${((profit - 1) * 100).toString()}% gain`);
+						// send to Database/Analytics Dashboard
+					} else {
+						console.log(`Lost ${((1 - profit) * 100).toString()}%`);
+						// send to Database/Analytics Dashboard
+					}
+				}
 			}
 		}
 	} else {
