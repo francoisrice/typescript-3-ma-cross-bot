@@ -12,6 +12,9 @@ setTimeout(() => {
 
 var isPositionOpened = false;
 
+const api_key = process.env.COINBASE_API_KEY || "";
+const api_secret = process.env.COINBASE_API_SECRET || "";
+
 const main = async () => {
 	const price = await fetchPrice();
 
