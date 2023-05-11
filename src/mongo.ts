@@ -78,6 +78,8 @@ export async function getMovingAverages() {
 }
 
 export async function getMovingAveragesWithPrice(currentPrice: number) {
+	// Cache Averages and Pull from Cache if within 30 minute period
+
 	try {
 		// Connect to the MongoDB database
 		await client.connect();
@@ -89,23 +91,33 @@ export async function getMovingAveragesWithPrice(currentPrice: number) {
 		let docs55 = await cursor55.toArray();
 
 		// Calculate the moving average for the last 55 documents
-		const ma55 = calculateMovingAverage(docs55, currentPrice);
+		const rawMa55 = calculateMovingAverage(docs55, currentPrice);
 
 		// Find the latest 21 documents
 		const docs21 = docs55.slice(0, 21);
-		const ma21 = calculateMovingAverage(docs21, currentPrice);
+		const rawMa21 = calculateMovingAverage(docs21, currentPrice);
 
 		// Find the latest 7 documents
 		const docs7 = docs55.slice(0, 7);
 
 		// Calculate the moving average for the last 7 documents
-		const ma7 = calculateMovingAverage(docs7, currentPrice);
+		const rawMa7 = calculateMovingAverage(docs7, currentPrice);
 
 		// Print the results
-		console.log(`Moving average for the last 55 documents: ${ma55.toFixed(2)}`);
-		console.log(`Moving average for the last 21 documents: ${ma21.toFixed(2)}`);
-		console.log(`Moving average for the last 7 documents: ${ma7.toFixed(2)}`);
-		return ma55.toFixed(2), ma21.toFixed(2), ma7.toFixed(2);
+		console.log(
+			`Moving average for the last 55 documents: ${rawMa55.toFixed(2)}`
+		);
+		console.log(
+			`Moving average for the last 21 documents: ${rawMa21.toFixed(2)}`
+		);
+		console.log(
+			`Moving average for the last 7 documents: ${rawMa7.toFixed(2)}`
+		);
+		const ma55 = rawMa55.toFixed(2);
+		const ma21 = rawMa21.toFixed(2);
+		const ma7 = rawMa7.toFixed(2);
+
+		return { ma55, ma21, ma7 };
 	} catch (error) {
 		console.error(error);
 	} finally {
