@@ -138,23 +138,14 @@ const main = async () => {
 	}
 };
 
-const fetchPrice: Promise<number> = async () => {
-	const timer = setInterval(() => {
-		axios
-			.get("https://api.coindesk.com/v1/bpi/currentprice.json")
-			.then((response) => {
-				const price = response.data.bpi.USD.rate_float;
+const fetchPrice = async (): Promise<number> => {
+	const response = await fetch(
+		"https://api.coindesk.com/v1/bpi/currentprice.json",
+		{ method: "GET" }
+	);
+	const responseData = await response.json();
 
-				console.log(price); // Let us know you're alive
-
-				const timestamp = new Date();
-				timestamps.push(timestamp);
-				prices.push(price);
-			})
-			.catch((error) => {
-				console.error(error);
-			});
-	}, 60000);
+	return responseData.bpi.USD.rate_float;
 };
 
 const createSignature = (inputString: string, secret: string) => {
