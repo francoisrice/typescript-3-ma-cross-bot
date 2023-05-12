@@ -2,6 +2,7 @@
 
 ## Deployment Steps
 
+- Make sure the `.env` file is outside both `src/` and `dist/` at the root of the project
 - Build .js files with `npx tsc`
 - rebuild docker images
   - `docker build -t 3-ma-cross -f ./docker/main/Dockerfile .`
@@ -14,8 +15,8 @@
   - `docker tag bitcoin-fetcher registry.digitalocean.com/bitshark-container-repo/test-annual-return:bitcoin-fetcher`
   - `docker push registry.digitalocean.com/bitshark-container-repo/test-annual-return:bitcoin-fetcher`
 - Pull & run containers on prod server with
-  - `docker pull registry.digitalocean.com/bitshark-container-repo/test-annual-return:3-ma-cross-main`
-  - `docker pull registry.digitalocean.com/bitshark-container-repo/test-annual-return:bitcoin-fetcher`
+  - `docker run registry.digitalocean.com/bitshark-container-repo/test-annual-return:3-ma-cross-main -d`
+  - `docker run registry.digitalocean.com/bitshark-container-repo/test-annual-return:bitcoin-fetcher -d`
 - Pull the latest container images if needed
   - `docker pull registry.digitalocean.com/bitshark-container-repo/test-annual-return:3-ma-cross-main`
   - `docker pull registry.digitalocean.com/bitshark-container-repo/test-annual-return:bitcoin-fetcher`

@@ -17,6 +17,6 @@ COPY package-lock.json ./
 RUN npm install
 RUN npx tsc
 
-CMD [ "node", "dist/bitcoin-fetcher.js" ]
+CMD [ "node", "dist/bitcoin-fetcher-v2.js" ]
 
 # CMD ["pm2-runtime","--error","main-error.log","--output","main.log", "main.js"]

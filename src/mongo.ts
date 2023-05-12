@@ -5,11 +5,17 @@ import { Candle } from "./types";
 
 // const uri =
 // 	"mongodb+srv://<username>:<password>@<cluster>.mongodb.net/test?retryWrites=true&w=majority";
-const uri = process.env.MONGO_URI || "";
+const uri = process.env["MONGO_URI"];
+
 if (uri === "") {
 	console.error("MONGO_URI not set");
 }
-const client = new MongoClient(uri);
+
+const client = new MongoClient(process.env.MONGO_URI || "");
+
+if (client) {
+	console.log("Mongo Client Connected");
+}
 
 export const sendBTCTickToMongo = async (candle: Candle) => {
 	try {
