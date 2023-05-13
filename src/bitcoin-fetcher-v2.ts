@@ -2,6 +2,9 @@
 import * as fs from "fs";
 import axios from "axios";
 
+import { sendBTCTickToMongo } from "./mongo";
+import { Candle } from "./types";
+
 const prices: number[] = [];
 let start_time: number;
 
@@ -13,18 +16,24 @@ function computeHighLowOpenClose() {
 	const close_price = prices[prices.length - 1];
 
 	// Create an object with the prices and timestamp
-	const timestamp = new Date().toISOString();
-	const price_object = {
+	const timestamp = new Date();
+	const timeframe = timestamp.toISOString();
+	const price_object: Candle = {
+		metadata: { period: "30m" },
+		timeframe,
 		timestamp,
-		open: open_price.toFixed(2),
-		close: close_price.toFixed(2),
-		high: high_price.toFixed(2),
-		low: low_price.toFixed(2),
+		open: open_price,
+		close: close_price,
+		high: high_price,
+		low: low_price,
 	};
 
 	// Write the object to a JSON file
-	const json = JSON.stringify(price_object);
-	fs.appendFileSync("prices.json", json + "\n");
+	// const json = JSON.stringify(price_object);
+	// fs.appendFileSync("prices.json", json + "\n");
+
+	// Write the object to MongoDB
+	sendBTCTickToMongo(price_object);
 
 	// Reset the prices array
 	prices.length = 0;

@@ -9,6 +9,7 @@ RUN apk update
 WORKDIR /home/app
 
 COPY src/ src/
+COPY .env-prod .env
 RUN mkdir dist/
 COPY tsconfig.json .
 COPY package.json ./

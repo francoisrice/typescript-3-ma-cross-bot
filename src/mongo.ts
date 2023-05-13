@@ -5,10 +5,18 @@ import { Candle } from "./types";
 
 // const uri =
 // 	"mongodb+srv://<username>:<password>@<cluster>.mongodb.net/test?retryWrites=true&w=majority";
-const uri = process.env["MONGO_URI"];
+const uri = process.env.MONGO_URI;
 
 if (uri === "") {
 	console.error("MONGO_URI not set");
+}
+
+const environment = process.env.ENVIROMENT;
+var env: string;
+if (process.env.ENVIROMENT?.toUpperCase().includes("PROD")) {
+	env = "prod";
+} else {
+	env = process.env.ENVIROMENT?.toLowerCase() || "dev";
 }
 
 const client = new MongoClient(process.env.MONGO_URI || "");
@@ -22,7 +30,7 @@ export const sendBTCTickToMongo = async (candle: Candle) => {
 		await client.connect();
 
 		const result = await client
-			.db("dev")
+			.db(env)
 			.collection("BTCprices")
 			.insertOne(candle);
 
