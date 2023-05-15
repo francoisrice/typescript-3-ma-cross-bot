@@ -34,7 +34,7 @@ export const sendBTCTickToMongo = async (candle: Candle) => {
 			.collection("BTCprices")
 			.insertOne(candle);
 
-		return `New tick recorded: ${result.insertedId}`;
+		console.log(`New tick recorded: ${result.insertedId}`);
 	} catch (err) {
 		if (err) {
 			console.error(err);
