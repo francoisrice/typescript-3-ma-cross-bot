@@ -1,5 +1,5 @@
 import axios from "axios";
-import CryptoJS from "crypto-js";
+import * as CryptoJS from "crypto-js";
 import { LocalStorage } from "node-localstorage";
 
 import { getMovingAveragesWithPrice } from "./mongo";
@@ -59,8 +59,8 @@ const main = async () => {
 					`Buy Order successful. Bought ${assetAmount.toString()} BTC @ ${price.toString()}`
 				);
 
-				localStorage.setItem(`assetAmount-BTC`, assetAmount.toString());
-				localStorage.setItem(`entryPrice-BTC`, price.toString());
+				localstorage.setItem(`assetAmount-BTC`, assetAmount.toString());
+				localstorage.setItem(`entryPrice-BTC`, price.toString());
 			}
 		} else if (
 			isPositionOpened == true &&
@@ -75,7 +75,7 @@ const main = async () => {
 			var entryPrice: number;
 			var base_size: number;
 
-			const assetAmountString = localStorage.getItem(`assetAmount-BTC`);
+			const assetAmountString = localstorage.getItem(`assetAmount-BTC`);
 			if (!assetAmountString) {
 				// throw new Error("Asset Amount is null.");
 				assetAmount = -1;
@@ -83,7 +83,7 @@ const main = async () => {
 				assetAmount = parseFloat(assetAmountString);
 			}
 
-			const entryPriceString = localStorage.getItem(`entryPrice-BTC`);
+			const entryPriceString = localstorage.getItem(`entryPrice-BTC`);
 			if (!entryPriceString) {
 				// throw new Error("Entry Price is null.");
 				entryPrice = -1;
@@ -109,8 +109,8 @@ const main = async () => {
 			if (order.data.success === true) {
 				isPositionOpened = false;
 
-				localStorage.setItem(`assetAmount-BTC`, "");
-				localStorage.setItem(`entryPrice-BTC`, "");
+				localstorage.setItem(`assetAmount-BTC`, "");
+				localstorage.setItem(`entryPrice-BTC`, "");
 
 				console.log(
 					`Sell Order successful. Sold ${base_size.toString()} BTC @ ${price.toString()}`
